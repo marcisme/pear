@@ -1,18 +1,7 @@
 defmodule Pear do
-  @moduledoc """
-  Documentation for Pear.
-  """
+  use Application
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Pear.hello
-      :world
-
-  """
-  def hello do
-    :world
+  def start(_type, _args) do
+    Pear.Supervisor.start_link
   end
 end

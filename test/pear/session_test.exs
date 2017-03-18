@@ -2,21 +2,24 @@ defmodule Pear.SessionTest do
   use ExUnit.Case, async: true
 
   setup do
-    {:ok, session} = Pear.Session.start_link
-    {:ok, session: session}
+    name =
+      %{channel: "C1234567890", ts: "1234567890.123456"}
+      |> Pear.Session.name
+    {:ok, _} = Pear.Session.start_link(name)
+    {:ok, name: name}
   end
 
-  test "stores user ids", %{session: session} do
-    assert Pear.Session.get(session) == []
+  test "stores user ids", %{name: name} do
+    assert Pear.Session.get(name) == []
 
-    Pear.Session.push(session, "U1234567890")
-    assert Pear.Session.get(session) == ["U1234567890"]
+    Pear.Session.push(name, "U1234567890")
+    assert Pear.Session.get(name) == ["U1234567890"]
   end
 
-  test "deletes user ids", %{session: session} do
-    Pear.Session.push(session, "U1234567890")
+  test "deletes user ids", %{name: name} do
+    Pear.Session.push(name, "U1234567890")
 
-    Pear.Session.delete(session, "U1234567890")
-    assert Pear.Session.get(session) == []
+    Pear.Session.delete(name, "U1234567890")
+    assert Pear.Session.get(name) == []
   end
 end
