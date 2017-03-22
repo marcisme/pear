@@ -6,10 +6,17 @@ defmodule Pear.Supervisor do
   end
 
   def init(:ok) do
-    children = [
-      supervisor(Registry, [:unique, Pear.Session])
-    ]
+    supervise(children(), strategy: :one_for_one)
+  end
 
-    supervise(children, strategy: :one_for_one)
+  defp children do
+    if Mix.env == :test do
+      [supervisor(Registry, [:unique, Pear.Session])]
+    else
+      [
+        supervisor(Registry, [:unique, Pear.Session]),
+        worker(Slack.Bot, [Pear.Bot, [], Application.fetch_env!(:pear, :token)])
+      ]
+    end
   end
 end
