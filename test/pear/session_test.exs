@@ -1,41 +1,55 @@
 defmodule Pear.SessionTest do
   use ExUnit.Case, async: true
+  alias Pear.Session
 
-  setup do
-    message = %{channel: "1", ts: "2.3"}
-    {:ok, _} = Pear.Session.initialize(message)
-    {:ok, message: message}
+  describe "Session.initialize/1" do
+    test "creates new sessions" do
+      assert {:ok, pid} = Session.initialize(%{channel: "1", ts: "2.3"})
+      assert is_pid(pid)
+      assert {:ok, pid} = Session.initialize(%{channel: "1", ts: "2.3"})
+      assert is_pid(pid)
+    end
+
+    test "reinitializes existing sessions" do
+      message = %{channel: "1", ts: "2.3"}
+      Session.initialize(message)
+      Session.add(message, "m1")
+      Session.initialize(message)
+      assert Session.user_ids(message) == []
+    end
   end
 
-  test "creates new sessions" do
-    assert {:ok, pid} = Pear.Session.initialize(%{channel: "1", ts: "2.3"})
-    assert is_pid(pid)
-    assert {:ok, pid} = Pear.Session.initialize(%{channel: "1", ts: "2.3"})
-    assert is_pid(pid)
+  describe "Session.add/2" do
+    test "adds user ids" do
+      message = %{channel: "1", ts: "2.3"}
+      Session.initialize(message)
+      assert Session.user_ids(message) == []
+      assert :ok = Session.add(message, "u1")
+      assert Session.user_ids(message) == ["u1"]
+    end
+
+    test "handles noproc" do
+      assert :unknown_session = Session.add(%{channel: "1", ts: "2.3"}, "_")
+    end
   end
 
-  test "reinitializes existing sessions" do
-    message = %{channel: "1", ts: "2.3"}
-    Pear.Session.initialize(message)
-    Pear.Session.add(message, "4")
-    Pear.Session.initialize(message)
-    assert Pear.Session.user_ids(message) == []
+  describe "Session.remove/2" do
+    test "removes user ids" do
+      message = %{channel: "1", ts: "2.3"}
+      Session.initialize(message)
+      Session.add(message, "u1")
+      assert :ok = Session.remove(message, "u1")
+      assert Session.user_ids(message) == []
+    end
+
+    test "handles noproc" do
+      assert :unknown_session = Session.remove(%{channel: "1", ts: "2.3"}, "_")
+    end
   end
 
-  test "adds user ids", %{message: message} do
-    assert Pear.Session.user_ids(message) == []
-    Pear.Session.add(message, "U1234567890")
-    assert Pear.Session.user_ids(message) == ["U1234567890"]
-  end
-
-  test "removes user ids", %{message: message} do
-    Pear.Session.add(message, "U1234567890")
-    Pear.Session.remove(message, "U1234567890")
-    assert Pear.Session.user_ids(message) == []
-  end
-
-  test "ignores unknown messages" do
-    Pear.Session.add(%{channel: "_", ts: "_"}, "_")
-    Pear.Session.remove(%{channel: "_", ts: "_"}, "_")
+  describe "Session.user_ids/1" do
+    test "handles noproc" do
+      assert :unknown_session = Session.user_ids(%{channel: "1", ts: "2.3"})
+    end
   end
 end

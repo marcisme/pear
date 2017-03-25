@@ -9,27 +9,30 @@ defmodule Pear.Session do
     end
   end
 
-  def user_ids(message) do
-    with [{pid, _}] <- Registry.lookup(__MODULE__, key(message)) do
-      Agent.get(pid, fn list -> list end)
-    end
-  end
-
-  def add(message, user_id) do
-    with [{pid, _}] <- Registry.lookup(__MODULE__, key(message)) do
-      Agent.update(pid, fn list -> [user_id | list] end)
-    end
-  end
-
-  def remove(message, user_id) do
-    with [{pid, _}] <- Registry.lookup(__MODULE__, key(message)) do
-      Agent.update(pid, &List.delete(&1, user_id))
-    end
-  end
-
   defp via_name(%{channel: channel}) do
     {:via, Registry, {__MODULE__, channel}}
   end
 
-  defp key(%{channel: channel}), do: channel
+  def user_ids(message) do
+    do_safely(message, &Agent.get(&1, fn list -> list end))
+  end
+
+  defp do_safely(message, action) do
+    try do
+      via_name(message)
+      |> action.()
+    catch
+      :exit, {:noproc, _} -> :unknown_session
+    end
+  end
+
+  def add(message, user_id) do
+    do_safely(message, &Agent.update(&1, fn list -> [user_id | list] end))
+  end
+
+  def remove(message, user_id) do
+    do_safely(message, &Agent.update(&1, fn list ->
+      List.delete(list, user_id)
+    end))
+  end
 end
