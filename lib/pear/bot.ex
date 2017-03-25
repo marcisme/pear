@@ -25,7 +25,7 @@ defmodule Pear.Bot do
     log_message(message)
     cond do
       Regex.match?(~r/pair me/, message.text) ->
-        response = Slack.Web.Chat.post_message(message.channel, "Bring out your pears!", token_params())
+        response = Slack.Web.Chat.post_message(message.channel, "Bring out your pears!")
         Pear.Session.initialize(message)
         Slack.Web.Reactions.add("pear", reaction_params(response))
       Regex.match?(~r/do it/, message.text) ->
@@ -44,13 +44,7 @@ defmodule Pear.Bot do
     Logger.debug "#{inspect(message)}"
   end
 
-  defp token_params do
-    %{
-      token: Application.fetch_env!(:pear, :token)
-    }
-  end
-
   defp reaction_params(%{"channel" => channel, "ts" => timestamp}) do
-    Map.merge(%{channel: channel, timestamp: timestamp}, token_params())
+    %{channel: channel, timestamp: timestamp}
   end
 end

@@ -15,7 +15,7 @@ defmodule Pear.Supervisor do
     else
       [
         supervisor(Registry, [:unique, Pear.Session]),
-        worker(Slack.Bot, [Pear.Bot, [], Application.fetch_env!(:pear, :token)])
+        worker(Slack.Bot, [Pear.Bot, [], Application.fetch_env!(:slack, :api_token)])
       ]
     end
   end
