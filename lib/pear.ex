@@ -1,7 +1,7 @@
 defmodule Pear do
   use Application
 
-  def start(_type, _args) do
-    Pear.Supervisor.start_link
+  def start(_type, args) do
+    Pear.Supervisor.start_link(args)
   end
 end

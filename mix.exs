@@ -16,7 +16,7 @@ defmodule Pear.Mixfile do
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
     [extra_applications: [:logger],
-     mod: {Pear, []}]
+     mod: {Pear, [start_bot: Mix.env != :test]}]
   end
 
   # Dependencies can be Hex packages:
