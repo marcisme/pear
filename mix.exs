@@ -29,6 +29,7 @@ defmodule Pear.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:slack, "~> 0.11.0"}]
+    [{:mix_docker, "~> 0.3.0"},
+     {:slack, "~> 0.11.0"}]
   end
 end
