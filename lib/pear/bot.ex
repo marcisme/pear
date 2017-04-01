@@ -48,6 +48,7 @@ defmodule Pear.Bot do
       case command.execute(message) do
         {service, action, args} ->
           command(service, action, args, message, slack)
+        :unknown_session -> nil
         nil -> nil
       end
     end)
@@ -98,7 +99,7 @@ defmodule Pear.Command.RandomPairGoCommand do
           user_ids
           |> Enum.map(&("{#{&1}}"))
           |> Enum.join("\n")
-        {:rtm, :send, text}
+        {:rtm, :send, "Here are your pairs: #{text}"}
       end
     end
   end

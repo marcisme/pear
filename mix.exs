@@ -5,6 +5,7 @@ defmodule Pear.Mixfile do
     [app: :pear,
      version: "0.1.0",
      elixir: "~> 1.4",
+     elixirc_paths: elixirc_paths(Mix.env),
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps()]
@@ -18,6 +19,9 @@ defmodule Pear.Mixfile do
     [extra_applications: [:logger],
      mod: {Pear, [start_bot: Mix.env != :test]}]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_),     do: ["lib"]
 
   # Dependencies can be Hex packages:
   #
