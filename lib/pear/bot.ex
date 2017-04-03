@@ -66,15 +66,7 @@ defmodule Pear.Bot do
   end
 
   defp command(:rtm, :send, text, message, slack) do
-    replace_user_ids_with_names(text, slack)
-    |> send_message(message.channel, slack)
-  end
-
-  defp replace_user_ids_with_names(text, slack) do
-    Regex.replace(~r/({U[^}]+})/, text, fn _, user_id ->
-      Regex.replace(~r/[{}]/, user_id, "")
-      |> Slack.Lookups.lookup_user_name(slack)
-    end)
+    send_message(text, message.channel, slack)
   end
 
   defp reaction_params(%{"channel" => channel, "ts" => timestamp}) do
@@ -97,7 +89,7 @@ defmodule Pear.Command.RandomPairGoCommand do
       with user_ids when is_list(user_ids) <- Pear.Session.user_ids(message) do
         text =
           user_ids
-          |> Enum.map(&("{#{&1}}"))
+          |> Enum.map(&("<@#{&1}>"))
           |> Enum.join("\n")
         {:rtm, :send, "Here are your pairs: #{text}"}
       end

@@ -40,26 +40,36 @@ defmodule Pear.TestBot do
   end
 
   def handle_event(message = %{type: "message"}, _slack, state) do
+    Logger.debug inspect(message)
     {:ok, %State{state | messages: [message | state.messages]}}
   end
   def handle_event(_, _, state), do: {:ok, state}
 
   def handle_info({:send_test_message, text, channel}, slack, state) do
-    Logger.debug("send_test_message")
     send_message(text, channel, slack)
     {:ok, state}
   end
 
   def handle_info({:react, reaction, params}, _slack, state) do
-    Logger.debug("react")
     Slack.Web.Reactions.add(reaction, Map.put(params, :token, state.token))
     {:ok, state}
   end
 
-  def handle_info({:test_messages, caller}, _slack, state) do
-    Logger.debug("test_messages")
-    send(caller, {:test_messages, state.messages})
+  def handle_info({:test_messages, caller}, slack, state) do
+    messages = map_user_ids_to_names(state.messages, slack)
+    send(caller, {:test_messages, messages})
     {:ok, state}
+  end
+
+  defp map_user_ids_to_names(messages, slack) do
+    Enum.map(messages, fn message ->
+      text =
+        Regex.replace(~r/(<@[^>]+>)/, message.text, fn _, user_id ->
+          Regex.replace(~r/[@<>]/, user_id, "")
+          |> Slack.Lookups.lookup_user_name(slack)
+        end)
+      %{message | text: text}
+    end)
   end
 end
 
