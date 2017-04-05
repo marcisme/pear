@@ -51,18 +51,12 @@ defmodule Pear.Bot do
   end
 
   defp command(:web, :post_and_react, [channel, text, reaction], _slack) do
-    params =
-      Slack.Web.Chat.post_message(channel, text)
-      |> reaction_params()
-    Slack.Web.Reactions.add(reaction, params)
+    %{"channel" => channel, "ts" => ts} = Slack.Web.Chat.post_message(channel, text)
+    Slack.Web.Reactions.add(reaction, %{channel: channel, timestamp: ts})
   end
 
   defp command(:rtm, :send, [channel, text], slack) do
     send_message(text, channel, slack)
-  end
-
-  defp reaction_params(%{"channel" => channel, "ts" => timestamp}) do
-    %{channel: channel, timestamp: timestamp}
   end
 end
 
