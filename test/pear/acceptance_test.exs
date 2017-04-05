@@ -26,7 +26,7 @@ defmodule Pear.AcceptanceTest do
     end
   end
 
-  defp eventually(timeout \\ 1_000, delay \\ 100, assertion) do
+  defp eventually(timeout \\ 2_000, delay \\ 100, assertion) do
     start = :os.system_time(:millisecond)
     Enum.reduce_while(1..100, 0, fn _, acc ->
       try do
@@ -46,3 +46,4 @@ defmodule Pear.AcceptanceTest do
     end)
   end
 end
+

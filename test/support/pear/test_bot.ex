@@ -14,7 +14,7 @@ defmodule Pear.TestBot do
   end
 
   def has_message(pid, text) do
-    Enum.find(test_messages(pid), &String.contains?(&1.text, text))
+    Enum.find(test_messages(pid), &(&1.text == text))
   end
 
   def test_messages(pid) do
@@ -39,8 +39,8 @@ defmodule Pear.TestBot do
     {:ok, state}
   end
 
-  def handle_event(message = %{type: "message"}, _slack, state) do
-    Logger.debug inspect(message)
+  def handle_event(message = %{type: "message"}, slack, state) do
+    Logger.debug "#{slack.me.name}: #{inspect(message)}"
     {:ok, %State{state | messages: [message | state.messages]}}
   end
   def handle_event(_, _, state), do: {:ok, state}
