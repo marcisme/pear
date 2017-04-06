@@ -42,7 +42,7 @@ defmodule Pear.Bot do
       if command.accept?(message.type) do
         case command.execute(message, slack) do
           {service, action, args} ->
-            command(service, action, args, slack)
+            slack(service, action, args, slack)
             true
           :halt ->
             true
@@ -54,12 +54,12 @@ defmodule Pear.Bot do
     {:ok, state}
   end
 
-  defp command(:web, :post_and_react, [channel, text, reaction], _slack) do
+  defp slack(:web, :post_and_react, [channel, text, reaction], _slack) do
     %{"channel" => channel, "ts" => ts} = Slack.Web.Chat.post_message(channel, text)
     Slack.Web.Reactions.add(reaction, %{channel: channel, timestamp: ts})
   end
 
-  defp command(:rtm, :send, [channel, text], slack) do
+  defp slack(:rtm, :send, [channel, text], slack) do
     send_message(text, channel, slack)
   end
 end
