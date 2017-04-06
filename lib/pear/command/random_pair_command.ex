@@ -7,6 +7,8 @@ defmodule Pear.Command.RandomPairCommand do
     if Regex.match?(~r/pair me/, message.text) do
       Pear.Session.initialize(message)
       {:web, :post_and_react, [message.channel, "Bring out your pears!", "pear"]}
+    else
+      :cont
     end
   end
 end

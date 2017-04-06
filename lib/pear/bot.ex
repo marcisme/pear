@@ -25,7 +25,8 @@ defmodule Pear.Bot do
 
   def handle_event(message = %{type: "message", subtype: "message_changed"}, slack, state) do
     # yeah...
-    Map.put(message, :text, message.message.text)
+    message
+    |> Map.put(:text, message.message.text)
     |> dispatch(slack, state)
     {:ok, state}
   end
@@ -42,8 +43,11 @@ defmodule Pear.Bot do
         case command.execute(message, slack) do
           {service, action, args} ->
             command(service, action, args, slack)
-          :stop -> true
-          nil -> false
+            true
+          :halt ->
+            true
+          :cont ->
+            false
         end
       end
     end)

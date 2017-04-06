@@ -12,6 +12,8 @@ defmodule Pear.Command.RandomPairGoCommand do
           |> Enum.join("\n")
         {:rtm, :send, [message.channel, "Here are your pairs: #{text}"]}
       end
+    else
+      :cont
     end
   end
 end

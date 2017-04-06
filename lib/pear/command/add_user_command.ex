@@ -5,7 +5,7 @@ defmodule Pear.Command.AddUserCommand do
 
   def execute(message, _slack) do
     Pear.Session.add(message.item, message.user)
-    :stop
+    :halt
   end
 end
 

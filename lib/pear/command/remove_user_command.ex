@@ -5,7 +5,7 @@ defmodule Pear.Command.RemoveUserCommand do
 
   def execute(message, _slack) do
     Pear.Session.remove(message.item, message.user)
-    :stop
+    :halt
   end
 end
 
