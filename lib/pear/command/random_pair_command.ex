@@ -12,4 +12,3 @@ defmodule Pear.Command.RandomPairCommand do
     end
   end
 end
-

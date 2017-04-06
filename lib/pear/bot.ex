@@ -63,4 +63,3 @@ defmodule Pear.Bot do
     send_message(text, channel, slack)
   end
 end
-

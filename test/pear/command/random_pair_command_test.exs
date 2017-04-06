@@ -10,8 +10,14 @@ defmodule Pear.Command.RandomPairCommandTest do
 
   describe "RandomPairCommand.execute/2" do
     test "returns a :post_and_react command when message contains 'pair me'" do
-      assert {:web, :post_and_react, ["channel", "Bring out your pears!", "pear"]} =
-        RandomPairCommand.execute(%{channel: "channel", ts: "", text: "a pair me b"}, nil)
+      assert {:web, :post_and_react, ["1", "Bring out your pears!", "pear"]} =
+        RandomPairCommand.execute(%{channel: "1", ts: "2.3", text: "a pair me b"}, nil)
+    end
+
+    test "initializes a session when message contains 'pair me'" do
+      message = %{channel: "1", ts: "2.3", text: "a pair me b"}
+      RandomPairCommand.execute(message, nil)
+      refute Pear.Session.user_ids(message) == :nosession
     end
 
     test "continues execution when message does not contain 'pair me'" do
