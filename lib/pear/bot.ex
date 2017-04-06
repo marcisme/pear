@@ -2,6 +2,12 @@ defmodule Pear.Bot do
   use Slack
   require Logger
 
+  @types [
+    "message",
+    "reaction_added",
+    "reaction_removed",
+  ]
+
   @commands [
     Pear.Command.FilterSelfCommand,
     Pear.Command.RandomPairCommand,
@@ -15,14 +21,6 @@ defmodule Pear.Bot do
     {:ok, state}
   end
 
-  def handle_event(message = %{type: "reaction_added"}, slack, state) do
-    dispatch(message, slack, state)
-  end
-
-  def handle_event(message = %{type: "reaction_removed"}, slack, state) do
-    dispatch(message, slack, state)
-  end
-
   def handle_event(message = %{type: "message", subtype: "message_changed"}, slack, state) do
     # yeah...
     message
@@ -31,7 +29,7 @@ defmodule Pear.Bot do
     {:ok, state}
   end
 
-  def handle_event(message = %{type: "message"}, slack, state) do
+  def handle_event(message = %{type: type}, slack, state) when type in @types do
     dispatch(message, slack, state)
   end
   def handle_event(_, _, state), do: {:ok, state}
