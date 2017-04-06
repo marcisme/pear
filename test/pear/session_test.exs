@@ -29,7 +29,7 @@ defmodule Pear.SessionTest do
     end
 
     test "handles noproc" do
-      assert :unknown_session = Session.add(%{channel: "1", ts: "2.3"}, "_")
+      assert :nosession = Session.add(%{channel: "1", ts: "2.3"}, "_")
     end
   end
 
@@ -43,13 +43,13 @@ defmodule Pear.SessionTest do
     end
 
     test "handles noproc" do
-      assert :unknown_session = Session.remove(%{channel: "1", ts: "2.3"}, "_")
+      assert :nosession = Session.remove(%{channel: "1", ts: "2.3"}, "_")
     end
   end
 
   describe "Session.user_ids/1" do
     test "handles noproc" do
-      assert :unknown_session = Session.user_ids(%{channel: "1", ts: "2.3"})
+      assert :nosession = Session.user_ids(%{channel: "1", ts: "2.3"})
     end
   end
 end

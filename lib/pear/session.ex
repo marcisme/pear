@@ -19,10 +19,11 @@ defmodule Pear.Session do
 
   defp do_safely(message, action) do
     try do
-      via_name(message)
+      message
+      |> via_name
       |> action.()
     catch
-      :exit, {:noproc, _} -> :unknown_session
+      :exit, {:noproc, _} -> :nosession
     end
   end
 
