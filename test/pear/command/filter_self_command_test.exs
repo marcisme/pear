@@ -14,11 +14,11 @@ defmodule Pear.Command.FilterSelfCommandTest do
 
   describe "FilterSelfCommand.execute/2" do
     test "stops execution when self" do
-      assert :halt = FilterSelfCommand.execute(%{user: "me"}, %{me: %{id: "me"}})
+      assert FilterSelfCommand.execute(%{user: "me"}, %{me: %{id: "me"}}) == :halt
     end
 
     test "continues execution when not self" do
-      assert :cont = FilterSelfCommand.execute(%{user: "notme"}, %{me: %{id: "me"}})
+      assert FilterSelfCommand.execute(%{user: "notme"}, %{me: %{id: "me"}}) == :cont
     end
   end
 end

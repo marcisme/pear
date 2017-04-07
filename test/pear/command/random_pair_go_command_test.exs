@@ -1,6 +1,7 @@
 defmodule Pear.Command.RandomPairGoCommandTest do
   use ExUnit.Case, async: true
   alias Pear.Command.RandomPairGoCommand
+  import Pear.TestHelpers
 
   describe "RandomPairGoCommand.accept?/1" do
     test "accepts message messages" do
@@ -8,14 +9,20 @@ defmodule Pear.Command.RandomPairGoCommandTest do
     end
   end
 
-  describe "RandomPairGoCommand.execute/2" do
-    # test "returns a command when message contains 'go'" do
-    #   assert {:web, :send, ["channel", "Here are your pairs: @test"]} =
-    #     RandomPairGoCommand.execute(%{channel: "channel", ts: "", text: "a go b"}, nil)
-    # end
+  describe "RandomPairGoCommand.execute/2 when message contains 'go'" do
+    test "returns a command" do
+      message = %{channel: c("1"), ts: "2.3", text: "a go b"}
+      Pear.Session.initialize(message)
+      Pear.Session.add(message, "u1")
 
-    test "continues execution when message does not contain 'pair me'" do
-      assert :cont = RandomPairGoCommand.execute(%{text: "nope"}, nil)
+      assert RandomPairGoCommand.execute(message, nil) ==
+        {:rtm, :send, [c("1"), "Here are your pairs: <@u1>"]}
+    end
+  end
+
+  describe "RandomPairGoCommand.execute/2 when message does not contain 'go'" do
+    test "continues execution when message does not contain 'go'" do
+      assert RandomPairGoCommand.execute(%{text: "nope"}, nil) == :cont
     end
   end
 end
