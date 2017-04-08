@@ -46,7 +46,9 @@ defmodule Pear.TestBot do
   def handle_event(_, _, state), do: {:ok, state}
 
   def handle_info({:send_test_message, text, channel}, slack, state) do
-    send_message(text, channel, slack)
+    text
+    |> map_user_name_to_basic_messaging_format(slack)
+    |> send_message(channel, slack)
     {:ok, state}
   end
 
@@ -69,6 +71,12 @@ defmodule Pear.TestBot do
           |> Slack.Lookups.lookup_user_name(slack)
         end)
       %{message | text: text}
+    end)
+  end
+
+  defp map_user_name_to_basic_messaging_format(text, slack) do
+    Regex.replace(~r/(@\w+)/, text, fn _, user_name ->
+      "<@#{Slack.Lookups.lookup_user_id(user_name, slack)}>"
     end)
   end
 end
