@@ -17,6 +17,10 @@ defmodule Pear.TestBot do
     Enum.find(test_messages(pid), &(&1.text == text))
   end
 
+  def has_message_starting_with(pid, text) do
+    Enum.find(test_messages(pid), &String.starts_with?(&1.text, text))
+  end
+
   def test_messages(pid) do
     send(pid, {:test_messages, self()})
     receive do

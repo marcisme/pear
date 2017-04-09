@@ -24,7 +24,7 @@ defmodule Pear.AcceptanceTest do
 
       TestBot.send_test_message(test_bot, "@pear go", @test_channel)
       eventually do
-        assert TestBot.has_message(test_bot, "Here are your pairs: @test1")
+        assert TestBot.has_message_starting_with(test_bot, "Here are your pairs: ")
       end
 
       # When tests are run close together, it's possible to be resent

@@ -11,12 +11,15 @@ defmodule Pear.Command.RandomPairGoCommandTest do
 
   describe "RandomPairGoCommand.execute/2 when message contains 'go'" do
     test "returns a command when the session exists" do
-      message = %{channel: c("1"), ts: "2.3", text: "a go b"}
+      channel = c("1")
+      message = %{channel: channel, ts: "2.3", text: "a go b"}
       Pear.Session.initialize(message)
       Pear.Session.add(message, "u1")
+      Pear.Session.add(message, "u2")
+      Pear.Session.add(message, "u3")
 
-      assert RandomPairGoCommand.execute(message, nil) ==
-        {:rtm, :send, [c("1"), "Here are your pairs: <@u1>"]}
+      assert {:rtm, :send, [^channel, text]} = RandomPairGoCommand.execute(message, nil)
+      assert Regex.match?(~r/Here are your pairs: \[<@u\d>, <@u\d>\], \[<@u\d>\]/, text)
     end
 
     test "halts execution when the session does not exist" do

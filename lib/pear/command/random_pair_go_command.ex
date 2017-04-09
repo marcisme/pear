@@ -9,8 +9,16 @@ defmodule Pear.Command.RandomPairGoCommand do
         user_ids when is_list(user_ids) ->
           text =
             user_ids
+            |> Enum.take_random(Enum.count(user_ids))
             |> Enum.map(&("<@#{&1}>"))
-            |> Enum.join("\n")
+            |> Enum.chunk(2, 2, [])
+            |> Enum.map(fn
+                 [a, b] ->
+                   "[#{a}, #{b}]"
+                 [a] ->
+                   "[#{a}]"
+               end)
+            |> Enum.join(", ")
           {:rtm, :send, [message.channel, "Here are your pairs: #{text}"]}
         :nosession ->
           :halt
@@ -20,4 +28,3 @@ defmodule Pear.Command.RandomPairGoCommand do
     end
   end
 end
-
