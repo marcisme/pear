@@ -27,7 +27,7 @@ defmodule Pear.TestBot do
   # Slack.Bot
 
   defmodule State do
-    defstruct messages: [], token: ""
+    defstruct messages: [], latests: %{}, token: ""
   end
 
   def start_link(token) do
@@ -35,13 +35,26 @@ defmodule Pear.TestBot do
   end
 
   def handle_connect(slack, state) do
-    Logger.debug "Connected as #{slack.me.name}"
-    {:ok, state}
+    latests =
+      slack
+      |> Map.take([:groups, :channels])
+      |> Map.values()
+      |> Enum.flat_map(&Map.values/1)
+      |> Enum.filter(&Map.has_key?(&1, :latest))
+      |> Enum.reduce(%{}, &Map.put(&2, &1.id, &1.latest.ts))
+    Logger.debug "Connected as #{slack.me.name}, latests: #{inspect(latests)}"
+    {:ok, %{state | latests: latests}}
   end
 
   def handle_event(message = %{type: "message"}, slack, state) do
-    Logger.debug "#{slack.me.name}: #{inspect(message)}"
-    {:ok, %State{state | messages: [message | state.messages]}}
+    messages =
+      if message.ts > state.latests[message.channel] do
+        Logger.debug "#{slack.me.name}: #{inspect(message)}"
+        [message | state.messages]
+      else
+        state.messages
+      end
+    {:ok, %State{state | messages: messages}}
   end
   def handle_event(_, _, state), do: {:ok, state}
 
