@@ -37,7 +37,7 @@ defmodule Pear.Bot do
 
   defp dispatch(message, slack, state) do
     Logger.debug "#{slack.me.name}: #{inspect(message)}"
-    Enum.find(@commands, fn command ->
+    found = Enum.find(@commands, fn command ->
       if command.accept?(message.type) do
         case command.execute(message, slack) do
           {service, action, args} ->
@@ -50,6 +50,7 @@ defmodule Pear.Bot do
         end
       end
     end)
+    if !found, do: help(message.channel, slack)
     {:ok, state}
   end
 
@@ -60,5 +61,12 @@ defmodule Pear.Bot do
 
   defp slack(:rtm, :send, [channel, text], slack) do
     send_message(text, channel, slack)
+  end
+
+  defp help(channel, slack) do
+    send_message("""
+    I'm sorry, I don't know how to do that.
+    I can help you organize a random pairing session if you tell me to \"pair\".
+    """, channel, slack)
   end
 end
