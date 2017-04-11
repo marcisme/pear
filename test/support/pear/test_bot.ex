@@ -9,7 +9,7 @@ defmodule Pear.TestBot do
   end
 
   def react(pid, text, reaction) do
-    %{channel: channel, ts: ts} = has_message(pid, text)
+    %{channel: channel, ts: ts} = has_message_starting_with(pid, text)
     send(pid, {:react, reaction, %{channel: channel, timestamp: ts}})
   end
 

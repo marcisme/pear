@@ -17,10 +17,10 @@ defmodule Pear.AcceptanceTest do
 
       TestBot.send_test_message(test_bot, "@pear pair me", @test_channel)
       eventually do
-        assert TestBot.has_message(test_bot, "Bring out your pears!")
+        assert TestBot.has_message_starting_with(test_bot, "Random pairing time!")
       end
 
-      TestBot.react(test_bot, "Bring out your pears!", "microscope")
+      TestBot.react(test_bot, "Random pairing time!", "microscope")
 
       TestBot.send_test_message(test_bot, "@pear go", @test_channel)
       eventually do

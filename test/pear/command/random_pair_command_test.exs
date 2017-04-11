@@ -12,7 +12,7 @@ defmodule Pear.Command.RandomPairCommandTest do
   describe "RandomPairCommand.execute/2 when message contains 'pair'" do
     test "returns a :post_and_react command" do
       assert RandomPairCommand.execute(%{channel: c("1"), ts: "2.3", text: "a pair me b"}, nil) ==
-        {:web, :post_and_react, [c("1"), "Bring out your pears!", "pear"]}
+        {:web, :post_and_react, [c("1"),"Random pairing time!\nAdd reactions to this message to participate, and tell me to \"go\" when you're ready.", "pear"]}
     end
 
     test "initializes a session" do
