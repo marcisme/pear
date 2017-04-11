@@ -28,6 +28,15 @@ defmodule Pear.SessionTest do
       assert Session.user_ids(message) == ["u1"]
     end
 
+    test "adds user ids only once" do
+      message = %{channel: "1", ts: "2.3"}
+      Session.initialize(message)
+      assert Session.user_ids(message) == []
+      assert :ok = Session.add(message, "u1")
+      assert :ok = Session.add(message, "u1")
+      assert Session.user_ids(message) == ["u1"]
+    end
+
     test "handles noproc" do
       assert :nosession = Session.add(%{channel: "1", ts: "2.3"}, "_")
     end

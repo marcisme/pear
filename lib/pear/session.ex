@@ -1,10 +1,10 @@
 defmodule Pear.Session do
   def initialize(message) do
-    case Agent.start_link(fn -> [] end, name: via_name(message)) do
+    case Agent.start_link(fn -> MapSet.new end, name: via_name(message)) do
       {:ok, pid} ->
         {:ok, pid}
       {:error, {:already_started, pid}} ->
-        Agent.update(pid, fn _ -> [] end)
+        Agent.update(pid, fn _ -> MapSet.new end)
         {:ok, pid}
     end
   end
@@ -14,7 +14,7 @@ defmodule Pear.Session do
   end
 
   def user_ids(message) do
-    do_safely(message, &Agent.get(&1, fn list -> list end))
+    do_safely(message, &Agent.get(&1, fn set -> MapSet.to_list(set) end))
   end
 
   defp do_safely(message, action) do
@@ -28,12 +28,12 @@ defmodule Pear.Session do
   end
 
   def add(message, user_id) do
-    do_safely(message, &Agent.update(&1, fn list -> [user_id | list] end))
+    do_safely(message, &Agent.update(&1, fn set -> MapSet.put(set, user_id) end))
   end
 
   def remove(message, user_id) do
-    do_safely(message, &Agent.update(&1, fn list ->
-      List.delete(list, user_id)
+    do_safely(message, &Agent.update(&1, fn set ->
+      MapSet.delete(set, user_id)
     end))
   end
 end
