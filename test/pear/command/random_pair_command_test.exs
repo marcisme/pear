@@ -9,14 +9,14 @@ defmodule Pear.Command.RandomPairCommandTest do
     end
   end
 
-  describe "RandomPairCommand.execute/2 when message contains 'pair me'" do
+  describe "RandomPairCommand.execute/2 when message contains 'pair'" do
     test "returns a :post_and_react command" do
       assert RandomPairCommand.execute(%{channel: c("1"), ts: "2.3", text: "a pair me b"}, nil) ==
         {:web, :post_and_react, [c("1"), "Bring out your pears!", "pear"]}
     end
 
     test "initializes a session" do
-      message = %{channel: c("1"), ts: "2.3", text: "a pair me b"}
+      message = %{channel: c("1"), ts: "2.3", text: "a pair b"}
 
       RandomPairCommand.execute(message, nil)
 
@@ -24,9 +24,13 @@ defmodule Pear.Command.RandomPairCommandTest do
     end
   end
 
-  describe "RandomPairCommand.execute/2 when message does not contain 'pair me'" do
-    test "continues execution" do
+  describe "RandomPairCommand.execute/2 when message does not contain 'pair'" do
+    test "continues execution when no 'pair'" do
       assert RandomPairCommand.execute(%{text: "nope"}, nil) == :cont
+    end
+
+    test "continues execution when no explicit 'pair'" do
+      assert RandomPairCommand.execute(%{text: "apairb"}, nil) == :cont
     end
   end
 end
