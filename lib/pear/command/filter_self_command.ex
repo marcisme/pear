@@ -8,4 +8,3 @@ defmodule Pear.Command.FilterSelfCommand do
     if message.user == slack.me.id, do: :halt, else: :cont
   end
 end
-

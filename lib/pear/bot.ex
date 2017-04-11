@@ -10,6 +10,7 @@ defmodule Pear.Bot do
 
   @commands [
     Pear.Command.FilterSelfCommand,
+    Pear.Command.FilterNonDirectCommand,
     Pear.Command.RandomPairCommand,
     Pear.Command.RandomPairGoCommand,
     Pear.Command.AddUserCommand,
