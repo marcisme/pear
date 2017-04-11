@@ -11,7 +11,7 @@ defmodule Pear.Command.RandomPairCommandTest do
 
   describe "RandomPairCommand.execute/2 when message contains 'pair'" do
     test "returns a :post_and_react command" do
-      assert RandomPairCommand.execute(%{channel: c("1"), ts: "2.3", text: "a pair me b"}, nil) ==
+      assert RandomPairCommand.execute(%{channel: c("1"), ts: "2.3", text: "a pair b"}, nil) ==
         {:web, :post_and_react, [c("1"),"Random pairing time!\nAdd reactions to this message to participate, and tell me to \"go\" when you're ready.", "pear"]}
     end
 
@@ -21,6 +21,18 @@ defmodule Pear.Command.RandomPairCommandTest do
       RandomPairCommand.execute(message, nil)
 
       refute Pear.Session.user_ids(message) == :nosession
+    end
+  end
+
+  describe "RandomPairCommand.execute/2 when message contains ':pear:'" do
+    test "returns a :post_and_react command when ':pear:' is embedded" do
+      assert RandomPairCommand.execute(%{channel: c("1"), ts: "2.3", text: "a:pear:b"}, nil) ==
+        {:web, :post_and_react, [c("1"),"Random pairing time!\nAdd reactions to this message to participate, and tell me to \"go\" when you're ready.", "pear"]}
+    end
+
+    test "returns a :post_and_react command when ':pear:' is not embedded" do
+      assert RandomPairCommand.execute(%{channel: c("1"), ts: "2.3", text: ":pear:"}, nil) ==
+        {:web, :post_and_react, [c("1"),"Random pairing time!\nAdd reactions to this message to participate, and tell me to \"go\" when you're ready.", "pear"]}
     end
   end
 
