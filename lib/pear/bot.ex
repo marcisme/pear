@@ -65,12 +65,17 @@ defmodule Pear.Bot do
   end
 
   defp slack(:web, :post_and_react, [channel, text, reaction], _slack) do
-    %{"channel" => channel, "ts" => ts} = Slack.Web.Chat.post_message(channel, text)
-    Slack.Web.Reactions.add(reaction, %{channel: channel, timestamp: ts})
+    %{"channel" => channel, "ts" => ts} = Slack.Web.Chat.post_message(channel, text, with_token())
+    Slack.Web.Reactions.add(reaction, with_token(%{channel: channel, timestamp: ts}))
   end
 
   defp slack(:rtm, :send, [channel, text], slack) do
     send_message(text, channel, slack)
+  end
+
+  defp with_token, do: with_token(%{})
+  defp with_token(map) do
+    Map.merge(%{token: Config.get(:slack, :api_token)}, map)
   end
 
   defp help(channel, slack) do

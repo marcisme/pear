@@ -5,12 +5,14 @@ defmodule Pear.AcceptanceTest do
 
   @moduletag :capture_log
   @moduletag :acceptance
-  @test_api_token Application.fetch_env!(:pear, :test_api_token)
-  @test_channel Application.fetch_env!(:pear, :test_channel)
+
+  @api_token Config.get(:slack, :api_token)
+  @test_api_token Config.get(:pear, :test_api_token)
+  @test_channel "#" <> Config.get(:pear, :test_channel)
 
   describe "random pairing sessions" do
     test "happy path" do
-      {:ok, _} = Slack.Bot.start_link(Pear.Bot, [], Application.fetch_env!(:slack, :api_token))
+      {:ok, _} = Slack.Bot.start_link(Pear.Bot, [], @api_token)
       {:ok, test_bot} = TestBot.start_link(@test_api_token)
 
       TestBot.send_test_message(test_bot, "and so it begins...", @test_channel)

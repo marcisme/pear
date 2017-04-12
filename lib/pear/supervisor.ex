@@ -12,7 +12,7 @@ defmodule Pear.Supervisor do
   defp children(options) do
     if options[:start_bot] do
       [supervisor(Registry, [:unique, Pear.Session]),
-       worker(Slack.Bot, [Pear.Bot, [], Application.fetch_env!(:slack, :api_token)])]
+       worker(Slack.Bot, [Pear.Bot, [], Config.get(:slack, :api_token)])]
     else
       [supervisor(Registry, [:unique, Pear.Session])]
     end
