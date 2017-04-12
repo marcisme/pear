@@ -7,4 +7,4 @@ jobs:
     steps:
       - checkout
       - run: mix deps.get
-      - run: mix test
+      - run: mix test --include acceptance
