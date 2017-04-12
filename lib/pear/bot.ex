@@ -8,6 +8,11 @@ defmodule Pear.Bot do
     "reaction_removed",
   ]
 
+  @ignored_message_subtypes [
+    "message_deleted",
+    "message_replied",
+  ]
+
   @commands [
     Pear.Command.FilterSelfCommand,
     Pear.Command.FilterNonDirectCommand,
@@ -22,6 +27,11 @@ defmodule Pear.Bot do
     {:ok, state}
   end
 
+  def handle_event(%{type: "message", subtype: subtype}, _slack, state)
+  when subtype in @ignored_message_subtypes do
+    {:ok, state}
+  end
+
   def handle_event(message = %{type: "message", subtype: "message_changed"}, slack, state) do
     # yeah...
     message
@@ -33,7 +43,7 @@ defmodule Pear.Bot do
   def handle_event(message = %{type: type}, slack, state) when type in @types do
     dispatch(message, slack, state)
   end
-  def handle_event(_, _, state), do: {:ok, state}
+  def handle_event(_message, _slack, state), do: {:ok, state}
 
   defp dispatch(message, slack, state) do
     Logger.debug "#{slack.me.name}: #{inspect(message)}"
