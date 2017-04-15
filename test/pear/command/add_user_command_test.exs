@@ -4,8 +4,12 @@ defmodule Pear.Command.AddUserCommandTest do
   import Pear.TestHelpers
 
   describe "AddUserCommand.accept?/1" do
-    test "accepts reaction_added events" do
-      assert AddUserCommand.accept? %{type: "reaction_added"}
+    test "accepts reaction_added events for messages" do
+      assert AddUserCommand.accept? %{type: "reaction_added", item: %{type: "message"}}
+    end
+
+    test "rejects reaction_added events for other types" do
+      refute AddUserCommand.accept? %{type: "reaction_added", item: %{type: "file"}}
     end
   end
 
