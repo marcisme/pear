@@ -33,7 +33,7 @@ defmodule Pear.AcceptanceTest do
       # events from a previous run. This count confirms that we've only
       # seen the number of messages that we expect from this run.
       # A failure here means either the expected count is wrong, or the
-      # message filtering done by the TestBot has a bug.
+      # event filtering done by the TestBot has a bug.
       # The expected message count should most likely be equal to the
       # number of `eventually` blocks above.
       assert TestBot.test_messages(test_bot) |> Enum.count == 2

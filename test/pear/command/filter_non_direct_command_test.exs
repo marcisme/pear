@@ -3,7 +3,7 @@ defmodule Pear.Command.FilterNonDirectCommandTest do
   alias Pear.Command.FilterNonDirectCommand
 
   describe "FilterNonDirectCommand.accept?/1" do
-    test "accepts message messages" do
+    test "accepts event events" do
       assert FilterNonDirectCommand.accept? "message"
     end
   end

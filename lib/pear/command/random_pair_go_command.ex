@@ -3,9 +3,9 @@ defmodule Pear.Command.RandomPairGoCommand do
 
   def accept?(type), do: type == "message"
 
-  def execute(message, _slack) do
-    if Regex.match?(~r/go/, message.text) do
-      case Pear.Session.user_ids(message) do
+  def execute(event, _slack) do
+    if Regex.match?(~r/go/, event.text) do
+      case Pear.Session.user_ids(event) do
         user_ids when is_list(user_ids) ->
           text =
             user_ids
@@ -19,7 +19,7 @@ defmodule Pear.Command.RandomPairGoCommand do
                    "[#{a}]"
                end)
             |> Enum.join(", ")
-          {:rtm, :send, [message.channel, "Here are your pairs: #{text}"]}
+          {:rtm, :send, [event.channel, "Here are your pairs: #{text}"]}
         :nosession ->
           :halt
       end

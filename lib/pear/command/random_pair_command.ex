@@ -4,10 +4,10 @@ defmodule Pear.Command.RandomPairCommand do
 
   def accept?(type), do: type == "message"
 
-  def execute(message, _slack) do
-    if Regex.match?(~r/(\bpair\b|:pear:)/, message.text) do
-      Pear.Session.initialize(message)
-      {:web, :post_and_react, [message.channel, @text, "pear"]}
+  def execute(event, _slack) do
+    if Regex.match?(~r/(\bpair\b|:pear:)/, event.text) do
+      Pear.Session.initialize(event)
+      {:web, :post_and_react, [event.channel, @text, "pear"]}
     else
       :cont
     end

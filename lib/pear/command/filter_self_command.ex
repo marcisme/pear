@@ -4,7 +4,7 @@ defmodule Pear.Command.FilterSelfCommand do
 
   def accept?(type), do: type in @types
 
-  def execute(message, slack) do
-    if message.user == slack.me.id, do: :halt, else: :cont
+  def execute(event, slack) do
+    if event.user == slack.me.id, do: :halt, else: :cont
   end
 end

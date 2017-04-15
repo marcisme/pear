@@ -1,6 +1,6 @@
 defmodule Pear.Session do
-  def initialize(message) do
-    case Agent.start_link(fn -> MapSet.new end, name: via_name(message)) do
+  def initialize(event) do
+    case Agent.start_link(fn -> MapSet.new end, name: via_name(event)) do
       {:ok, pid} ->
         {:ok, pid}
       {:error, {:already_started, pid}} ->
@@ -13,13 +13,13 @@ defmodule Pear.Session do
     {:via, Registry, {__MODULE__, channel}}
   end
 
-  def user_ids(message) do
-    do_safely(message, &Agent.get(&1, fn set -> MapSet.to_list(set) end))
+  def user_ids(event) do
+    do_safely(event, &Agent.get(&1, fn set -> MapSet.to_list(set) end))
   end
 
-  defp do_safely(message, action) do
+  defp do_safely(event, action) do
     try do
-      message
+      event
       |> via_name
       |> action.()
     catch
@@ -27,12 +27,12 @@ defmodule Pear.Session do
     end
   end
 
-  def add(message, user_id) do
-    do_safely(message, &Agent.update(&1, fn set -> MapSet.put(set, user_id) end))
+  def add(event, user_id) do
+    do_safely(event, &Agent.update(&1, fn set -> MapSet.put(set, user_id) end))
   end
 
-  def remove(message, user_id) do
-    do_safely(message, &Agent.update(&1, fn set ->
+  def remove(event, user_id) do
+    do_safely(event, &Agent.update(&1, fn set ->
       MapSet.delete(set, user_id)
     end))
   end

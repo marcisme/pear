@@ -11,30 +11,30 @@ defmodule Pear.SessionTest do
     end
 
     test "reinitializes existing sessions" do
-      message = %{channel: "1", ts: "2.3"}
-      Session.initialize(message)
-      Session.add(message, "m1")
-      Session.initialize(message)
-      assert Session.user_ids(message) == []
+      event = %{channel: "1", ts: "2.3"}
+      Session.initialize(event)
+      Session.add(event, "m1")
+      Session.initialize(event)
+      assert Session.user_ids(event) == []
     end
   end
 
   describe "Session.add/2" do
     test "adds user ids" do
-      message = %{channel: "1", ts: "2.3"}
-      Session.initialize(message)
-      assert Session.user_ids(message) == []
-      assert :ok = Session.add(message, "u1")
-      assert Session.user_ids(message) == ["u1"]
+      event = %{channel: "1", ts: "2.3"}
+      Session.initialize(event)
+      assert Session.user_ids(event) == []
+      assert :ok = Session.add(event, "u1")
+      assert Session.user_ids(event) == ["u1"]
     end
 
     test "adds user ids only once" do
-      message = %{channel: "1", ts: "2.3"}
-      Session.initialize(message)
-      assert Session.user_ids(message) == []
-      assert :ok = Session.add(message, "u1")
-      assert :ok = Session.add(message, "u1")
-      assert Session.user_ids(message) == ["u1"]
+      event = %{channel: "1", ts: "2.3"}
+      Session.initialize(event)
+      assert Session.user_ids(event) == []
+      assert :ok = Session.add(event, "u1")
+      assert :ok = Session.add(event, "u1")
+      assert Session.user_ids(event) == ["u1"]
     end
 
     test "handles noproc" do
@@ -44,11 +44,11 @@ defmodule Pear.SessionTest do
 
   describe "Session.remove/2" do
     test "removes user ids" do
-      message = %{channel: "1", ts: "2.3"}
-      Session.initialize(message)
-      Session.add(message, "u1")
-      assert :ok = Session.remove(message, "u1")
-      assert Session.user_ids(message) == []
+      event = %{channel: "1", ts: "2.3"}
+      Session.initialize(event)
+      Session.add(event, "u1")
+      assert :ok = Session.remove(event, "u1")
+      assert Session.user_ids(event) == []
     end
 
     test "handles noproc" do

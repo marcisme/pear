@@ -8,7 +8,7 @@ defmodule Pear.Bot do
     "reaction_removed",
   ]
 
-  @ignored_message_subtypes [
+  @ignored_event_subtypes [
     "message_deleted",
     "message_replied",
   ]
@@ -28,28 +28,28 @@ defmodule Pear.Bot do
   end
 
   def handle_event(%{type: "message", subtype: subtype}, _slack, state)
-  when subtype in @ignored_message_subtypes do
+  when subtype in @ignored_event_subtypes do
     {:ok, state}
   end
 
-  def handle_event(message = %{type: "message", subtype: "message_changed"}, slack, state) do
+  def handle_event(event = %{type: "message", subtype: "message_changed"}, slack, state) do
     # yeah...
-    message
-    |> Map.put(:text, message.message.text)
+    event
+    |> Map.put(:text, event.message.text)
     |> dispatch(slack, state)
     {:ok, state}
   end
 
-  def handle_event(message = %{type: type}, slack, state) when type in @types do
-    dispatch(message, slack, state)
+  def handle_event(event = %{type: type}, slack, state) when type in @types do
+    dispatch(event, slack, state)
   end
-  def handle_event(_message, _slack, state), do: {:ok, state}
+  def handle_event(_event, _slack, state), do: {:ok, state}
 
-  defp dispatch(message, slack, state) do
-    Logger.debug "#{slack.me.name}: #{inspect(message)}"
+  defp dispatch(event, slack, state) do
+    Logger.debug "#{slack.me.name}: #{inspect(event)}"
     found = Enum.find(@commands, fn command ->
-      if command.accept?(message.type) do
-        case command.execute(message, slack) do
+      if command.accept?(event.type) do
+        case command.execute(event, slack) do
           {service, action, args} ->
             slack(service, action, args, slack)
             true
@@ -60,7 +60,7 @@ defmodule Pear.Bot do
         end
       end
     end)
-    if !found, do: help(message.channel, slack)
+    if !found, do: help(event.channel, slack)
     {:ok, state}
   end
 

@@ -3,8 +3,8 @@ defmodule Pear.Command.RemoveUserCommand do
 
   def accept?(type), do: type == "reaction_removed"
 
-  def execute(message, _slack) do
-    Pear.Session.remove(message.item, message.user)
+  def execute(event, _slack) do
+    Pear.Session.remove(event.item, event.user)
     :halt
   end
 end

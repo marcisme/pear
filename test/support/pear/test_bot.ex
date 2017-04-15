@@ -31,7 +31,7 @@ defmodule Pear.TestBot do
   # Slack.Bot
 
   defmodule State do
-    defstruct messages: [], latests: %{}, token: ""
+    defstruct events: [], latests: %{}, token: ""
   end
 
   def start_link(token) do
@@ -50,15 +50,15 @@ defmodule Pear.TestBot do
     {:ok, %{state | latests: latests}}
   end
 
-  def handle_event(message = %{type: "message"}, slack, state) do
-    messages =
-      if message.ts > state.latests[message.channel] do
-        Logger.debug "#{slack.me.name}: #{inspect(message)}"
-        [message | state.messages]
+  def handle_event(event = %{type: "message"}, slack, state) do
+    events =
+      if event.ts > state.latests[event.channel] do
+        Logger.debug "#{slack.me.name}: #{inspect(event)}"
+        [event | state.events]
       else
-        state.messages
+        state.events
       end
-    {:ok, %State{state | messages: messages}}
+    {:ok, %State{state | events: events}}
   end
   def handle_event(_, _, state), do: {:ok, state}
 
@@ -75,19 +75,19 @@ defmodule Pear.TestBot do
   end
 
   def handle_info({:test_messages, caller}, slack, state) do
-    messages = map_user_ids_to_names(state.messages, slack)
-    send(caller, {:test_messages, messages})
+    events = map_user_ids_to_names(state.events, slack)
+    send(caller, {:test_messages, events})
     {:ok, state}
   end
 
-  defp map_user_ids_to_names(messages, slack) do
-    Enum.map(messages, fn message ->
+  defp map_user_ids_to_names(events, slack) do
+    Enum.map(events, fn event ->
       text =
-        Regex.replace(~r/(<@[^>]+>)/, message.text, fn _, user_id ->
+        Regex.replace(~r/(<@[^>]+>)/, event.text, fn _, user_id ->
           Regex.replace(~r/[@<>]/, user_id, "")
           |> Slack.Lookups.lookup_user_name(slack)
         end)
-      %{message | text: text}
+      %{event | text: text}
     end)
   end
 
