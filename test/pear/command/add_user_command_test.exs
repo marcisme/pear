@@ -5,7 +5,7 @@ defmodule Pear.Command.AddUserCommandTest do
 
   describe "AddUserCommand.accept?/1" do
     test "accepts reaction_added events" do
-      assert AddUserCommand.accept? "reaction_added"
+      assert AddUserCommand.accept? %{type: "reaction_added"}
     end
   end
 

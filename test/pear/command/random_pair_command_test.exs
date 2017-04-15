@@ -5,7 +5,7 @@ defmodule Pear.Command.RandomPairCommandTest do
 
   describe "RandomPairCommand.accept?/1" do
     test "accepts message events" do
-      assert RandomPairCommand.accept? "message"
+      assert RandomPairCommand.accept? %{type: "message"}
     end
   end
 

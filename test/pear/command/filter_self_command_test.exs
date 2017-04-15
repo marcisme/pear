@@ -4,11 +4,11 @@ defmodule Pear.Command.FilterSelfCommandTest do
 
   describe "FilterSelfCommand.accept?/1" do
     test "accepts reaction_added events" do
-      assert FilterSelfCommand.accept? "reaction_added"
+      assert FilterSelfCommand.accept? %{type: "reaction_added"}
     end
 
     test "accepts reaction_removed events" do
-      assert FilterSelfCommand.accept? "reaction_removed"
+      assert FilterSelfCommand.accept? %{type: "reaction_removed"}
     end
   end
 

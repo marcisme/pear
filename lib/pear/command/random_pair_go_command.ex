@@ -1,7 +1,7 @@
 defmodule Pear.Command.RandomPairGoCommand do
   @behaviour Pear.Command
 
-  def accept?(type), do: type == "message"
+  def accept?(event), do: event.type == "message"
 
   def execute(event, _slack) do
     if Regex.match?(~r/go/, event.text) do

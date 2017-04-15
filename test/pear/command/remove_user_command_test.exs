@@ -5,7 +5,7 @@ defmodule Pear.Command.RemoveUserCommandTest do
 
   describe "RemoveUserCommand.accept?/1" do
     test "accepts reaction_added events" do
-      assert RemoveUserCommand.accept? "reaction_removed"
+      assert RemoveUserCommand.accept? %{type: "reaction_removed"}
     end
   end
 

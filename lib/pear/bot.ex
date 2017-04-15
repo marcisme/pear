@@ -2,7 +2,7 @@ defmodule Pear.Bot do
   use Slack
   require Logger
 
-  @types [
+  @event_types [
     "message",
     "reaction_added",
     "reaction_removed",
@@ -40,7 +40,7 @@ defmodule Pear.Bot do
     {:ok, state}
   end
 
-  def handle_event(event = %{type: type}, slack, state) when type in @types do
+  def handle_event(event = %{type: type}, slack, state) when type in @event_types do
     dispatch(event, slack, state)
   end
   def handle_event(_event, _slack, state), do: {:ok, state}
@@ -48,7 +48,7 @@ defmodule Pear.Bot do
   defp dispatch(event, slack, state) do
     Logger.debug "#{slack.me.name}: #{inspect(event)}"
     found = Enum.find(@commands, fn command ->
-      if command.accept?(event.type) do
+      if command.accept?(event) do
         case command.execute(event, slack) do
           {service, action, args} ->
             slack(service, action, args, slack)
