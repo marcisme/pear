@@ -1,5 +1,5 @@
 ExUnit.start()
-ExUnit.configure exclude: [:acceptance]
+ExUnit.configure capture_log: true, exclude: [:acceptance]
 
 defmodule Pear.Assertions do
   defmacro eventually(timeout \\ 1_000, delay \\ 100, do: assertion) do
