@@ -9,10 +9,16 @@ defmodule Pear.Command.RandomPairCommandTest do
     end
   end
 
+  describe "RandomPairCommand.help/0" do
+    test "is helpful" do
+      assert RandomPairCommand.help == "I can help you organize a random pairing session if you tell me to \"pair\"."
+    end
+  end
+
   describe "RandomPairCommand.execute/2 when event contains 'pair'" do
     test "returns a :post_and_react command" do
       assert RandomPairCommand.execute(%{channel: c("1"), ts: "2.3", text: "a pair b"}, nil) ==
-        {:web, :post_and_react, [c("1"),"Random pairing time!\nAdd reactions to this message to participate, and tell me to \"go\" when you're ready.", "pear"]}
+        {:web, :post_and_react, [c("1"), "Random pairing time!\nAdd reactions to this message to participate, and tell me to \"go\" when you're ready.", "pear"]}
     end
 
     test "initializes a session" do
@@ -27,12 +33,12 @@ defmodule Pear.Command.RandomPairCommandTest do
   describe "RandomPairCommand.execute/2 when event contains ':pear:'" do
     test "returns a :post_and_react command when ':pear:' is embedded" do
       assert RandomPairCommand.execute(%{channel: c("1"), ts: "2.3", text: "a:pear:b"}, nil) ==
-        {:web, :post_and_react, [c("1"),"Random pairing time!\nAdd reactions to this message to participate, and tell me to \"go\" when you're ready.", "pear"]}
+        {:web, :post_and_react, [c("1"), "Random pairing time!\nAdd reactions to this message to participate, and tell me to \"go\" when you're ready.", "pear"]}
     end
 
     test "returns a :post_and_react command when ':pear:' is not embedded" do
       assert RandomPairCommand.execute(%{channel: c("1"), ts: "2.3", text: ":pear:"}, nil) ==
-        {:web, :post_and_react, [c("1"),"Random pairing time!\nAdd reactions to this message to participate, and tell me to \"go\" when you're ready.", "pear"]}
+        {:web, :post_and_react, [c("1"), "Random pairing time!\nAdd reactions to this message to participate, and tell me to \"go\" when you're ready.", "pear"]}
     end
   end
 

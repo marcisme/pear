@@ -3,20 +3,28 @@ defmodule Pear.AcceptanceTest do
   alias Pear.TestBot
   import Pear.Assertions
 
-  @moduletag :capture_log
   @moduletag :acceptance
 
   @api_token Config.get(:slack, :api_token)
   @test_api_token Config.get(:pear, :test_api_token)
   @test_channel "#" <> Config.get(:pear, :test_channel)
 
+  setup_all do
+    {:ok, _} = Slack.Bot.start_link(Pear.Bot, [], @api_token)
+    {:ok, test_bot} = TestBot.start_link(@test_api_token)
+    TestBot.send_test_message(test_bot, "and so it begins...", @test_channel)
+    %{test_bot: test_bot}
+  end
+
+  setup context do
+    on_exit fn ->
+      TestBot.reset(context.test_bot)
+    end
+    context
+  end
+
   describe "random pairing sessions" do
-    test "happy path" do
-      {:ok, _} = Slack.Bot.start_link(Pear.Bot, [], @api_token)
-      {:ok, test_bot} = TestBot.start_link(@test_api_token)
-
-      TestBot.send_test_message(test_bot, "and so it begins...", @test_channel)
-
+    test "happy path", %{test_bot: test_bot} do
       TestBot.send_test_message(test_bot, "@pear pair me", @test_channel)
       eventually do
         assert TestBot.has_message_starting_with(test_bot, "Random pairing time!")
@@ -36,7 +44,27 @@ defmodule Pear.AcceptanceTest do
       # event filtering done by the TestBot has a bug.
       # The expected message count should most likely be equal to the
       # number of `eventually` blocks above.
-      assert TestBot.test_messages(test_bot) |> Enum.count == 2
+      eventually do
+        assert TestBot.test_messages(test_bot) |> Enum.count == 2
+      end
+    end
+  end
+
+  describe "help" do
+    test "unknown command", %{test_bot: test_bot} do
+      TestBot.send_test_message(test_bot, "@pear dafuq?", @test_channel)
+
+      eventually do
+        assert TestBot.has_message(test_bot, "I'm sorry, I don't know how to do that. Ask me for \"help\" to see what I respond to.")
+      end
+    end
+
+    test "help command", %{test_bot: test_bot} do
+      TestBot.send_test_message(test_bot, "@pear help", @test_channel)
+
+      eventually do
+        assert TestBot.has_message(test_bot, "I can help you organize a random pairing session if you tell me to \"pair\".")
+      end
     end
   end
 end

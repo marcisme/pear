@@ -20,6 +20,7 @@ defmodule Pear.Bot do
     Pear.Command.RandomPairGoCommand,
     Pear.Command.AddUserCommand,
     Pear.Command.RemoveUserCommand,
+    Pear.Command.HelpCommand,
   ]
 
   def handle_connect(slack, state) do
@@ -47,11 +48,14 @@ defmodule Pear.Bot do
 
   defp dispatch(event, slack, state) do
     Logger.debug "#{slack.me.name}: #{inspect(event)}"
-    found = Enum.find(@commands, fn command ->
+    Enum.find(@commands, fn command ->
       if command.accept?(event) do
         case command.execute(event, slack) do
           {service, action, args} ->
             slack(service, action, args, slack)
+            true
+          {:help, channel} ->
+            slack(:help, channel, slack)
             true
           :halt ->
             true
@@ -60,7 +64,6 @@ defmodule Pear.Bot do
         end
       end
     end)
-    if !found, do: help(event.channel, slack)
     {:ok, state}
   end
 
@@ -73,15 +76,16 @@ defmodule Pear.Bot do
     send_message(text, channel, slack)
   end
 
+  defp slack(:help, channel, slack) do
+    Enum.find(@commands, fn command ->
+      if function_exported? command, :help, 0 do
+        send_message(command.help, channel, slack)
+      end
+    end)
+  end
+
   defp with_token, do: with_token(%{})
   defp with_token(map) do
     Map.merge(%{token: Config.get(:slack, :api_token)}, map)
-  end
-
-  defp help(channel, slack) do
-    send_message("""
-    I'm sorry, I don't know how to do that.
-    I can help you organize a random pairing session if you tell me to \"pair\".
-    """, channel, slack)
   end
 end

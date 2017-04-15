@@ -28,6 +28,13 @@ defmodule Pear.TestBot do
     end
   end
 
+  def reset(pid) do
+    send(pid, {:reset, self()})
+    receive do
+      :reset -> :ok
+    end
+  end
+
   # Slack.Bot
 
   defmodule State do
@@ -78,6 +85,11 @@ defmodule Pear.TestBot do
     events = map_user_ids_to_names(state.events, slack)
     send(caller, {:test_messages, events})
     {:ok, state}
+  end
+
+  def handle_info({:reset, caller}, _slack, state) do
+    send(caller, :reset)
+    {:ok, %{state | events: []}}
   end
 
   defp map_user_ids_to_names(events, slack) do
